@@ -1,0 +1,9 @@
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\bin\Debug\FUI-Doc_Testing.exe.config
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\bin\Debug\FUI-Doc_Testing.exe
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\bin\Debug\FUI-Doc_Testing.pdb
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI-Doc_Testing.csproj.AssemblyReference.cache
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI-Doc_Testing.csproj.CoreCompileInputs.cache
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI-Doc_Testing.exe
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI-Doc_Testing.pdb
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI_Doc_Testing.Form1.resources
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI-Doc_Testing.csproj.GenerateResource.cache
