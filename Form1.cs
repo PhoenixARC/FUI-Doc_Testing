@@ -129,7 +129,7 @@ namespace FUI_Doc_Testing
             Console.WriteLine("imagesSize - " + BitConverter.ToInt32(imagesSize, 0));
             Console.WriteLine("fuiFontNameCount - " + BitConverter.ToInt32(fuiFontNameCount, 0));
             Console.WriteLine("fuiImportAssetCount - " + BitConverter.ToInt32(fuiImportAssetCount, 0));
-            Console.WriteLine("FrameSize - " + Encoding.Default.GetString(FrameSize));
+            Console.WriteLine("FrameSize - " + BitConverter.ToString(FrameSize));
 
             //rebuild
             List<byte> Output = new List<byte>();
@@ -154,7 +154,8 @@ namespace FUI_Doc_Testing
             Output.AddRange(BitConverter.GetBytes(FUI.header.fuiImportAssetCount));
             Output.AddRange((FUI.header.FrameSize));
 
-
+            if (BitConverter.ToString(Output.ToArray()) != BitConverter.ToString(Header))
+                throw new Exception();
 
         }
 
