@@ -32,6 +32,7 @@ namespace FUI_Doc_Testing
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.BrowseButton = new System.Windows.Forms.Button();
             this.LoadButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox1
@@ -61,11 +62,22 @@ namespace FUI_Doc_Testing
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(570, 39);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "DUMP LOG";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(735, 73);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.LoadButton);
             this.Controls.Add(this.BrowseButton);
             this.Controls.Add(this.textBox1);
@@ -82,5 +94,6 @@ namespace FUI_Doc_Testing
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button BrowseButton;
         private System.Windows.Forms.Button LoadButton;
+        private System.Windows.Forms.Button button1;
     }
 }

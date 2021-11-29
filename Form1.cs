@@ -35,6 +35,15 @@ namespace FUI_Doc_Testing
             }
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            FileStream filestream = new FileStream("out.txt", FileMode.Create);
+            var streamwriter = new StreamWriter(filestream);
+            streamwriter.AutoFlush = true;
+            Console.SetOut(streamwriter);
+            Console.SetError(streamwriter);
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             textBox1.Text = Environment.CurrentDirectory + "\\Controls720.fui";
@@ -129,7 +138,10 @@ namespace FUI_Doc_Testing
             Console.WriteLine("imagesSize - " + BitConverter.ToInt32(imagesSize, 0));
             Console.WriteLine("fuiFontNameCount - " + BitConverter.ToInt32(fuiFontNameCount, 0));
             Console.WriteLine("fuiImportAssetCount - " + BitConverter.ToInt32(fuiImportAssetCount, 0));
-            Console.WriteLine("FrameSize - " + BitConverter.ToString(FrameSize));
+            Console.WriteLine("FrameSize - " + BitConverter.ToString(FrameSize) + "");
+            Console.WriteLine(" ");
+            Console.WriteLine(" ");
+            Console.WriteLine(" ");
 
             //rebuild
             List<byte> Output = new List<byte>();
@@ -173,6 +185,11 @@ namespace FUI_Doc_Testing
                 FUI.timelines.Add(tl);
                 offset += (int)0x1C;
                 i++;
+
+
+                Console.WriteLine("Timeline -- ObjectType=" + tl.ObjectType);
+                Console.WriteLine("Timeline -- Unknown=" + tl.Unknown);
+                Console.WriteLine("Timeline -- Rectangle=" + BitConverter.ToString(tl.Rectangle));
             }
 
         }
@@ -189,6 +206,17 @@ namespace FUI_Doc_Testing
                 FUI.timelineActions.Add(tl);
                 offset += (int)0x84;
                 i++;
+
+
+                Console.Write("TimelineAction -- Unknown={");
+                foreach(short item in tl.Unknown)
+                {
+                    Console.Write(item + ", ");
+                }
+                Console.Write("}");
+                Console.WriteLine("");
+                Console.WriteLine("TimelineAction -- UnknownName1=" + tl.UnknownName1);
+                Console.WriteLine("TimelineAction -- UnknownName2=" + tl.UnknownName2);
             }
         }
 
@@ -205,6 +233,12 @@ namespace FUI_Doc_Testing
                 FUI.shapes.Add(tl);
                 offset += (int)0x1C;
                 i++;
+
+
+                Console.WriteLine("Shape -- UnknownValue1=" + tl.UnknownValue1);
+                Console.WriteLine("Shape -- UnknownValue2=" + tl.UnknownValue2);
+                Console.WriteLine("Shape -- ObjectType=" + tl.ObjectType);
+                Console.WriteLine("Shape -- Rectangle=" + BitConverter.ToString(tl.Rectangle));
             }
         }
 
@@ -220,57 +254,253 @@ namespace FUI_Doc_Testing
                 FUI.shapeComponents.Add(tl);
                 offset += (int)0x2C;
                 i++;
+
+                Console.WriteLine("fuiShapeComponentCount -- FillInfo=" + tl.FillInfo);
+                Console.WriteLine("fuiShapeComponentCount -- UnknownValue1=" + tl.UnknownValue1);
+                Console.WriteLine("fuiShapeComponentCount -- UnknownValue2=" + tl.UnknownValue2);
             }
         }
 
         void CheckVerts(byte[] Data)
         {
+            int i = 1;
+            while (i <= FUI.header.fuiVertCount)
+            {
+                FourJUserInterface.Vert tl = new FourJUserInterface.Vert();
+                tl.x = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
+                tl.y = BitConverter.ToInt32(Data.Skip(offset + (int)0x4).Take(4).ToArray(), 0);
+                FUI.verts.Add(tl);
+                offset += (int)0x8;
+                i++;
 
+                Console.WriteLine("fuiVert -- x=" + tl.x);
+                Console.WriteLine("fuiVert -- y=" + tl.y);
+            }
         }
 
         void CheckTimelineFrames(byte[] Data)
         {
+            int i = 1;
+            while (i <= FUI.header.fuiTimelineFrameCount)
+            {
+                FourJUserInterface.TimelineFrame tl = new FourJUserInterface.TimelineFrame();
+                tl.FrameName = Encoding.UTF8.GetString(Data.Skip(offset).Take((int)0x40).ToArray());
+                tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset+(int)0x40).Take(4).ToArray(), 0);
+                tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset+(int)0x44).Take(4).ToArray(), 0);
+                FUI.timelineFrames.Add(tl);
+                offset += (int)0x48;
+                i++;
 
+                Console.WriteLine("fuiTimelineFrame -- FrameName=" + tl.FrameName);
+                Console.WriteLine("fuiTimelineFrame -- Unknown1=" + tl.Unknown1);
+                Console.WriteLine("fuiTimelineFrame -- Unknown2=" + tl.Unknown2);
+            }
         }
 
         void CheckTimelineEvents(byte[] Data)
         {
+            int i = 1;
+            while (i <= FUI.header.fuiTimelineEventCount)
+            {
+                FourJUserInterface.TimelineEvent tl = new FourJUserInterface.TimelineEvent();
+                tl.Unknown = Data.Skip(offset).Take((int)0xc).ToArray().Select(b => (short)b).ToArray();
+                tl.matrix = (Data.Skip(offset + (int)0xc).Take((int)0x18).ToArray());
+                tl.ColorTransform = (Data.Skip(offset + (int)0x24).Take((int)0x20).ToArray());
+                tl.Color = (Data.Skip(offset + (int)0x44).Take(4).ToArray());
+                FUI.timelineEvents.Add(tl);
+                offset += (int)0x48;
+                i++;
 
+                Console.Write("TimelineEvent -- Unknown={");
+                foreach (short item in tl.Unknown)
+                {
+                    Console.Write(item + ", ");
+                }
+                Console.Write("}");
+                Console.WriteLine("");
+                Console.WriteLine("TimelineEvent -- matrix=" + BitConverter.ToString(tl.matrix));
+                Console.WriteLine("TimelineEvent -- ColorTransform=" + BitConverter.ToString(tl.ColorTransform));
+                Console.WriteLine("TimelineEvent -- Color=" + BitConverter.ToString(tl.Color));
+            }
         }
 
         void CheckTimelineEventNames(byte[] Data)
         {
 
+            int i = 1;
+            while (i <= FUI.header.fuiTimelineEventNameCount)
+            {
+                FourJUserInterface.TimelineEventName tl = new FourJUserInterface.TimelineEventName();
+                tl.EventName = Encoding.UTF8.GetString(Data.Skip(offset).Take((int)0x40).ToArray());
+                FUI.timelineEventNames.Add(tl);
+                offset += (int)0x40;
+                i++;
+
+                Console.WriteLine("TimelineEventName -- EventName=" + tl.EventName);
+            }
         }
 
         void CheckReferences(byte[] Data)
         {
+            int i = 1;
+            while (i <= FUI.header.fuiReferenceCount)
+            {
+                FourJUserInterface.Reference tl = new FourJUserInterface.Reference();
+                tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
+                tl.ReferenceName = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x4).Take((int)0x40).ToArray());
+                tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x8).Take(4).ToArray(), 0);
+                FUI.references.Add(tl);
+                offset += (int)0x48;
+                i++;
 
+                Console.WriteLine("Reference -- Unknown1=" + tl.Unknown1);
+                Console.WriteLine("Reference -- ReferenceName=" + tl.ReferenceName);
+                Console.WriteLine("Reference -- Unknown2=" + tl.Unknown2);
+            }
         }
 
         void CheckEdittexts(byte[] Data)
         {
 
+            int i = 1;
+            while (i <= FUI.header.fuiEdittextCount)
+            {
+                FourJUserInterface.Edittext tl = new FourJUserInterface.Edittext();
+                tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
+                tl.rectangle = Data.Skip(offset+(int)0x4).Take((int)0x10).ToArray();
+                tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset+(int)0x14).Take(4).ToArray(), 0);
+                tl.Unknown3 = BitConverter.ToInt32(Data.Skip(offset+(int)0x18).Take(4).ToArray(), 0);
+                tl.Color = (Data.Skip(offset+(int)0x1c).Take(4).ToArray());
+                tl.Unknown4 = Data.Skip(offset+(int)0x20).Take((int)0x18).ToArray().Select(b => (int)b).ToArray();
+                tl.htmlTextFormat = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x38).Take((int)0x100).ToArray());
+                FUI.edittexts.Add(tl);
+                offset += (int)0x138;
+                i++;
+
+                Console.WriteLine("Edittext -- Unknown1=" + tl.Unknown1);
+                Console.WriteLine("Edittext -- rectangle=" + BitConverter.ToString(tl.rectangle));
+                Console.WriteLine("Edittext -- Unknown2=" + tl.Unknown2);
+                Console.WriteLine("Edittext -- Unknown3=" + tl.Unknown3);
+                Console.WriteLine("Edittext -- Color=" + BitConverter.ToString(tl.Color));
+                Console.Write("Edittext -- Unknown4={");
+                foreach (int item in tl.Unknown4)
+                {
+                    Console.Write(item + ", ");
+                }
+                Console.Write("}");
+                Console.WriteLine("");
+                Console.WriteLine("Edittext -- htmlTextFormat=" + tl.htmlTextFormat);
+            }
         }
 
         void CheckFontNames(byte[] Data)
         {
+            int i = 1;
+            while (i <= FUI.header.fuiFontNameCount)
+            {
+                FourJUserInterface.FontName tl = new FourJUserInterface.FontName();
+                tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
+                tl.Fontname = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x4).Take((int)0x40).ToArray());
+                tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x44).Take(4).ToArray(), 0);
+                tl.Unknown3 = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x48).Take((int)0x40).ToArray());
+                tl.Unknown4 = Data.Skip(offset + (int)0x88).Take(8).ToArray().Select(b => (int)b).ToArray();
+                tl.Unknown5 = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x90).Take((int)0x40).ToArray());
+                tl.Unknown6 = Data.Skip(offset + (int)0xd0).Take(8).ToArray().Select(b => (int)b).ToArray();
+                tl.Unknown7 = Encoding.UTF8.GetString(Data.Skip(offset + (int)0xd8).Take((int)0x2c).ToArray());
+                FUI.fontNames.Add(tl);
+                offset += (int)0x104;
+                i++;
 
+                Console.WriteLine("FontName -- Unknown1=" + tl.Unknown1);
+                Console.WriteLine("FontName -- Fontname=" + tl.Fontname);
+                Console.WriteLine("FontName -- Unknown2=" + tl.Unknown2);
+                Console.WriteLine("FontName -- Unknown3=" + tl.Unknown3);
+                Console.Write("FontName -- Unknown4={");
+                foreach (int item in tl.Unknown4)
+                {
+                    Console.Write(item + ", ");
+                }
+                Console.Write("}");
+                Console.WriteLine("");
+                Console.WriteLine("FontName -- Unknown5=" + tl.Unknown5);
+                Console.Write("FontName -- Unknown6={");
+                foreach (int item in tl.Unknown6)
+                {
+                    Console.Write(item + ", ");
+                }
+                Console.Write("}");
+                Console.WriteLine("");
+                Console.WriteLine("FontName -- Unknown7=" + tl.Unknown7);
+            }
         }
 
         void CheckSymbols(byte[] Data)
         {
 
+            int i = 1;
+            while (i <= FUI.header.fuiSymbolCount)
+            {
+                FourJUserInterface.Symbol tl = new FourJUserInterface.Symbol();
+                tl.SymbolName = Encoding.UTF8.GetString(Data.Skip(offset).Take((int)0x40).ToArray());
+                tl.ObjectType = BitConverter.ToInt32(Data.Skip(offset+ (int)0x40).Take(4).ToArray(), 0);
+                tl.Unknown = BitConverter.ToInt32(Data.Skip(offset+ (int)0x44).Take(4).ToArray(), 0);
+                FUI.symbols.Add(tl);
+                offset += (int)0x48;
+                i++;
+
+                Console.WriteLine("Symbol -- SymbolName=" + tl.SymbolName);
+                Console.WriteLine("Symbol -- ObjectType=" + tl.ObjectType);
+                Console.WriteLine("Symbol -- Unknown=" + tl.Unknown);
+            }
         }
 
         void CheckImportAssets(byte[] Data)
         {
+            int i = 1;
+            while (i <= FUI.header.fuiImportAssetCount)
+            {
+                FourJUserInterface.ImportAsset tl = new FourJUserInterface.ImportAsset();
+                tl.AssetName = Encoding.UTF8.GetString(Data.Skip(offset).Take((int)0x40).ToArray());
+                FUI.importAssets.Add(tl);
+                offset += (int)0x40;
+                i++;
 
+                Console.WriteLine("ImportAsset -- AssetName=" + tl.AssetName);
+            }
         }
 
         void CheckBitmaps(byte[] Data)
         {
+            int i = 1;
+            while (i <= FUI.header.fuiBitmapCount)
+            {
+                FourJUserInterface.Bitmap tl = new FourJUserInterface.Bitmap();
+                tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
+                tl.ObjectType = BitConverter.ToInt32(Data.Skip(offset + (int)0x4).Take(4).ToArray(), 0);
+                tl.ScaleWidth = BitConverter.ToInt32(Data.Skip(offset + (int)0x8).Take(4).ToArray(), 0);
+                tl.ScaleHeight = BitConverter.ToInt32(Data.Skip(offset + (int)0xc).Take(4).ToArray(), 0);
+                tl.Size1 = BitConverter.ToInt32(Data.Skip(offset + (int)0x10).Take(4).ToArray(), 0);
+                tl.Size2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x14).Take(4).ToArray(), 0);
+                tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x18).Take(4).ToArray(), 0);
 
+                FUI.bitmaps.Add(tl);
+                offset += (int)0x20;
+
+                //Get Images
+                FUI.Images.Add(Data.Skip(offset).Take(tl.Size2).ToArray());
+                offset += tl.Size2;
+
+                i++;
+
+                Console.WriteLine("Bitmap -- Unknown1=" + tl.Unknown1);
+                Console.WriteLine("Bitmap -- ObjectType=" + tl.ObjectType);
+                Console.WriteLine("Bitmap -- ScaleWidth=" + tl.ScaleWidth);
+                Console.WriteLine("Bitmap -- ScaleHeight=" + tl.ScaleHeight);
+                Console.WriteLine("Bitmap -- Size1=" + tl.Size1);
+                Console.WriteLine("Bitmap -- Size2=" + tl.Size2);
+                Console.WriteLine("Bitmap -- Unknown2=" + tl.Unknown2);
+            }
+            Console.WriteLine("Offset: " + offset);
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace FUI_Doc_Testing
             public List<Symbol> symbols = new List<Symbol>();
             public List<ImportAsset> importAssets = new List<ImportAsset>();
             public List<Bitmap> bitmaps = new List<Bitmap>();
+            public List<byte[]> Images = new List<byte[]>();
         }
         //fuiHeader	0x98
         public class Header
@@ -104,7 +106,7 @@ namespace FUI_Doc_Testing
         //fuiTimelineEvent	0x48
         public class TimelineEvent
         {
-            public short Unknown;
+            public short[] Unknown;
             public byte[] matrix;
             public byte[] ColorTransform;
             public byte[] Color;
@@ -119,7 +121,9 @@ namespace FUI_Doc_Testing
         //fuiReference	0x48
         public class Reference
         {
-            public string AssetName;
+            public int Unknown1;
+            public string ReferenceName;
+            public int Unknown2;
         }
 
         //fuiEdittext	0x138
@@ -130,7 +134,7 @@ namespace FUI_Doc_Testing
             public int Unknown2;
             public float Unknown3;
             public byte[] Color;
-            public int Unknown4;
+            public int[] Unknown4;
             public string htmlTextFormat;
         }
 
@@ -141,9 +145,9 @@ namespace FUI_Doc_Testing
             public string Fontname;
             public int Unknown2;
             public string Unknown3;
-            public int Unknown4;
+            public int[] Unknown4;
             public string Unknown5;
-            public int Unknown6;
+            public int[] Unknown6;
             public string Unknown7;
         }
 
@@ -158,6 +162,7 @@ namespace FUI_Doc_Testing
         //fuiImportAsset	0x40
         public class ImportAsset
         {
+            public string AssetName;
         }
 
         //fuiBitmap	0x20
