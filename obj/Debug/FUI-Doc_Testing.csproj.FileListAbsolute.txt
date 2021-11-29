@@ -7,3 +7,4 @@ C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI-Doc_Te
 C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI-Doc_Testing.pdb
 C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI_Doc_Testing.Form1.resources
 C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI-Doc_Testing.csproj.GenerateResource.cache
+C:\Users\phoen\source\repos\FUI-Doc_Testing\FUI-Doc_Testing\obj\Debug\FUI_Doc_Testing.FUIView.resources

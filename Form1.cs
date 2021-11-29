@@ -1,12 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FUI_Doc_Testing
@@ -23,7 +16,9 @@ namespace FUI_Doc_Testing
 
         private void LoadButton_Click(object sender, EventArgs e)
         {
-            Console.Clear();
+            Console.Clear(); 
+            FUI = new FourJUserInterface.FUI(); 
+            FUI0 = new FourJUserInterface.Functions();
             FUI0.OpenFUI(textBox1.Text, FUI);
         }
 

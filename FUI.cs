@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace FUI_Doc_Testing
 {
@@ -209,6 +208,12 @@ namespace FUI_Doc_Testing
                 CheckSymbols(Data);
                 CheckImportAssets(Data);
                 CheckBitmaps(Data);
+
+                if(MessageBox.Show("Do you want to open FUI in viewer?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    FUIView fv = new FUIView(fui2);
+                    fv.ShowDialog();
+                }
             }
 
             void ReadHeaders(byte[] Header)
@@ -612,31 +617,38 @@ namespace FUI_Doc_Testing
                 int i = 1;
                 while (i <= fui2.header.fuiBitmapCount)
                 {
-                    FourJUserInterface.Bitmap tl = new FourJUserInterface.Bitmap();
-                    tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
-                    tl.ObjectType = BitConverter.ToInt32(Data.Skip(offset + (int)0x4).Take(4).ToArray(), 0);
-                    tl.ScaleWidth = BitConverter.ToInt32(Data.Skip(offset + (int)0x8).Take(4).ToArray(), 0);
-                    tl.ScaleHeight = BitConverter.ToInt32(Data.Skip(offset + (int)0xc).Take(4).ToArray(), 0);
-                    tl.Size1 = BitConverter.ToInt32(Data.Skip(offset + (int)0x10).Take(4).ToArray(), 0);
-                    tl.Size2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x14).Take(4).ToArray(), 0);
-                    tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x18).Take(4).ToArray(), 0);
+                    try
+                    {
+                        FourJUserInterface.Bitmap tl = new FourJUserInterface.Bitmap();
+                        tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
+                        tl.ObjectType = BitConverter.ToInt32(Data.Skip(offset + (int)0x4).Take(4).ToArray(), 0);
+                        tl.ScaleWidth = BitConverter.ToInt32(Data.Skip(offset + (int)0x8).Take(4).ToArray(), 0);
+                        tl.ScaleHeight = BitConverter.ToInt32(Data.Skip(offset + (int)0xc).Take(4).ToArray(), 0);
+                        tl.Size1 = BitConverter.ToInt32(Data.Skip(offset + (int)0x10).Take(4).ToArray(), 0);
+                        tl.Size2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x14).Take(4).ToArray(), 0);
+                        tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x18).Take(4).ToArray(), 0);
 
-                    fui2.bitmaps.Add(tl);
-                    offset += (int)0x20;
+                        fui2.bitmaps.Add(tl);
+                        offset += (int)0x20;
 
-                    //Get Images
-                    fui2.Images.Add(Data.Skip(offset).Take(tl.Size2).ToArray());
-                    offset += tl.Size2;
+                        //Get Images
+                        //fui2.Images.Add(Data.Skip(offset).Take(tl.Size2).ToArray());
+                        //offset += tl.Size2;
 
-                    i++;
+                        i++;
 
-                    Console.WriteLine("Bitmap -- Unknown1=" + tl.Unknown1);
-                    Console.WriteLine("Bitmap -- ObjectType=" + tl.ObjectType);
-                    Console.WriteLine("Bitmap -- ScaleWidth=" + tl.ScaleWidth);
-                    Console.WriteLine("Bitmap -- ScaleHeight=" + tl.ScaleHeight);
-                    Console.WriteLine("Bitmap -- Size1=" + tl.Size1);
-                    Console.WriteLine("Bitmap -- Size2=" + tl.Size2);
-                    Console.WriteLine("Bitmap -- Unknown2=" + tl.Unknown2);
+                        Console.WriteLine("Bitmap -- Unknown1=" + tl.Unknown1);
+                        Console.WriteLine("Bitmap -- ObjectType=" + tl.ObjectType);
+                        Console.WriteLine("Bitmap -- ScaleWidth=" + tl.ScaleWidth);
+                        Console.WriteLine("Bitmap -- ScaleHeight=" + tl.ScaleHeight);
+                        Console.WriteLine("Bitmap -- Size1=" + tl.Size1);
+                        Console.WriteLine("Bitmap -- Size2=" + tl.Size2);
+                        Console.WriteLine("Bitmap -- Unknown2=" + tl.Unknown2);
+                    }
+                    catch
+                    {
+                        MessageBox.Show(offset + "");
+                    }
                 }
                 Console.WriteLine("Offset: " + offset);
             }
