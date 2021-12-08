@@ -46,6 +46,9 @@ namespace FUI_Doc_Testing
             textBox1.Text = Environment.CurrentDirectory + "\\Controls720.fui";
         }
 
-
+        private void button2_Click(object sender, EventArgs e)
+        {
+            FUI0.SaveFUI(textBox1.Text, FUI);
+        }
     }
 }

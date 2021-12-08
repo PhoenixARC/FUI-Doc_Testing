@@ -61,7 +61,7 @@ namespace FUI_Doc_Testing
                 {
                     TreeNode tl = new TreeNode("Timeline"+i);
                     tl.Tag = FUI.timelines[i].ObjectType + "\n{";
-                    foreach (short shr in FUI.timelines[i].Unknown) { tl.Tag += shr+ ", "; }
+                    foreach (sbyte shr in FUI.timelines[i].Unknown) { tl.Tag += shr+ ", "; }
                     tl.Tag += "}\n" + BitConverter.ToString(FUI.timelines[i].Rectangle);
                     timelines.Nodes.Add(tl);
                     i++;

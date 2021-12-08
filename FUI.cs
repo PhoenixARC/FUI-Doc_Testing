@@ -61,14 +61,14 @@ namespace FUI_Doc_Testing
         public class Timeline
         {
             public int ObjectType;
-            public short[] Unknown;
+            public byte[] Unknown;
             public byte[] Rectangle;
         }
 
         //fuiTimelineAction	0x84
         public class TimelineAction
         {
-            public short[] Unknown;
+            public byte[] Unknown;
             public string UnknownName1;
             public string UnknownName2;
         }
@@ -108,7 +108,7 @@ namespace FUI_Doc_Testing
         //fuiTimelineEvent	0x48
         public class TimelineEvent
         {
-            public short[] Unknown;
+            public byte[] Unknown;
             public byte[] matrix;
             public byte[] ColorTransform;
             public byte[] Color;
@@ -125,7 +125,7 @@ namespace FUI_Doc_Testing
         {
             public int Unknown1;
             public string ReferenceName;
-            public int Unknown2;
+            public byte[] Unknown2;
         }
 
         //fuiEdittext	0x138
@@ -136,7 +136,7 @@ namespace FUI_Doc_Testing
             public int Unknown2;
             public float Unknown3;
             public byte[] Color;
-            public int[] Unknown4;
+            public byte[] Unknown4;
             public string htmlTextFormat;
         }
 
@@ -147,9 +147,9 @@ namespace FUI_Doc_Testing
             public string Fontname;
             public int Unknown2;
             public string Unknown3;
-            public int[] Unknown4;
+            public byte[] Unknown4;
             public string Unknown5;
-            public int[] Unknown6;
+            public byte[] Unknown6;
             public string Unknown7;
         }
 
@@ -177,6 +177,7 @@ namespace FUI_Doc_Testing
             public int Size1;
             public int Size2;
             public int Unknown2;
+            public int Unknown3;
         }
 
         #endregion
@@ -209,7 +210,7 @@ namespace FUI_Doc_Testing
                 CheckImportAssets(Data);
                 CheckBitmaps(Data);
 
-                if(MessageBox.Show("Do you want to open FUI in viewer?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show("Do you want to open FUI in viewer?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     FUIView fv = new FUIView(fui2);
                     fv.ShowDialog();
@@ -323,15 +324,19 @@ namespace FUI_Doc_Testing
                 {
                     FourJUserInterface.Timeline tl = new FourJUserInterface.Timeline();
                     tl.ObjectType = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
-                    tl.Unknown = Data.Skip(offset + 4).Take(8).ToArray().Select(b => (short)b).ToArray();
+                    tl.Unknown = Data.Skip(offset + 4).Take(8).ToArray();
                     tl.Rectangle = Data.Skip(offset + (int)0xc).Take((int)0x10).ToArray();
                     fui2.timelines.Add(tl);
                     offset += (int)0x1C;
                     i++;
-
+                    
 
                     Console.WriteLine("Timeline -- ObjectType=" + tl.ObjectType);
-                    Console.WriteLine("Timeline -- Unknown=" + tl.Unknown);
+                    Console.Write("Timeline -- Unknown={ ");
+                    foreach (byte shr in tl.Unknown)
+                        Console.Write(shr + ", ");
+                    Console.Write("}");
+                    Console.WriteLine("");
                     Console.WriteLine("Timeline -- Rectangle=" + BitConverter.ToString(tl.Rectangle));
                 }
 
@@ -343,7 +348,7 @@ namespace FUI_Doc_Testing
                 while (i <= fui2.header.fuiTimelineActionCount)
                 {
                     FourJUserInterface.TimelineAction tl = new FourJUserInterface.TimelineAction();
-                    tl.Unknown = Data.Skip(offset).Take(4).ToArray().Select(b => (short)b).ToArray();
+                    tl.Unknown = Data.Skip(offset).Take(4).ToArray().Select(b => (byte)b).ToArray();
                     tl.UnknownName1 = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x4).Take((int)0x40).ToArray());
                     tl.UnknownName2 = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x44).Take((int)0x40).ToArray());
                     fui2.timelineActions.Add(tl);
@@ -352,7 +357,7 @@ namespace FUI_Doc_Testing
 
 
                     Console.Write("TimelineAction -- Unknown={");
-                    foreach (short item in tl.Unknown)
+                    foreach (byte item in tl.Unknown)
                     {
                         Console.Write(item + ", ");
                     }
@@ -446,7 +451,7 @@ namespace FUI_Doc_Testing
                 while (i <= fui2.header.fuiTimelineEventCount)
                 {
                     FourJUserInterface.TimelineEvent tl = new FourJUserInterface.TimelineEvent();
-                    tl.Unknown = Data.Skip(offset).Take((int)0xc).ToArray().Select(b => (short)b).ToArray();
+                    tl.Unknown = Data.Skip(offset).Take((int)0xc).ToArray().Select(b => (byte)b).ToArray();
                     tl.matrix = (Data.Skip(offset + (int)0xc).Take((int)0x18).ToArray());
                     tl.ColorTransform = (Data.Skip(offset + (int)0x24).Take((int)0x20).ToArray());
                     tl.Color = (Data.Skip(offset + (int)0x44).Take(4).ToArray());
@@ -455,7 +460,7 @@ namespace FUI_Doc_Testing
                     i++;
 
                     Console.Write("TimelineEvent -- Unknown={");
-                    foreach (short item in tl.Unknown)
+                    foreach (byte item in tl.Unknown)
                     {
                         Console.Write(item + ", ");
                     }
@@ -491,14 +496,14 @@ namespace FUI_Doc_Testing
                     FourJUserInterface.Reference tl = new FourJUserInterface.Reference();
                     tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
                     tl.ReferenceName = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x4).Take((int)0x40).ToArray());
-                    tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x8).Take(4).ToArray(), 0);
+                    tl.Unknown2 = (Data.Skip(offset + (int)0x40).Take(4).ToArray());
                     fui2.references.Add(tl);
                     offset += (int)0x48;
                     i++;
 
                     Console.WriteLine("Reference -- Unknown1=" + tl.Unknown1);
                     Console.WriteLine("Reference -- ReferenceName=" + tl.ReferenceName);
-                    Console.WriteLine("Reference -- Unknown2=" + tl.Unknown2);
+                    Console.WriteLine("Reference -- Unknown2=" + BitConverter.ToString(tl.Unknown2, 0));
                 }
             }
 
@@ -514,7 +519,7 @@ namespace FUI_Doc_Testing
                     tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x14).Take(4).ToArray(), 0);
                     tl.Unknown3 = BitConverter.ToInt32(Data.Skip(offset + (int)0x18).Take(4).ToArray(), 0);
                     tl.Color = (Data.Skip(offset + (int)0x1c).Take(4).ToArray());
-                    tl.Unknown4 = Data.Skip(offset + (int)0x20).Take((int)0x18).ToArray().Select(b => (int)b).ToArray();
+                    tl.Unknown4 = Data.Skip(offset + (int)0x20).Take((int)0x18).ToArray();
                     tl.htmlTextFormat = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x38).Take((int)0x100).ToArray());
                     fui2.edittexts.Add(tl);
                     offset += (int)0x138;
@@ -546,9 +551,9 @@ namespace FUI_Doc_Testing
                     tl.Fontname = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x4).Take((int)0x40).ToArray());
                     tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x44).Take(4).ToArray(), 0);
                     tl.Unknown3 = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x48).Take((int)0x40).ToArray());
-                    tl.Unknown4 = Data.Skip(offset + (int)0x88).Take(8).ToArray().Select(b => (int)b).ToArray();
+                    tl.Unknown4 = Data.Skip(offset + (int)0x88).Take(8).ToArray();
                     tl.Unknown5 = Encoding.UTF8.GetString(Data.Skip(offset + (int)0x90).Take((int)0x40).ToArray());
-                    tl.Unknown6 = Data.Skip(offset + (int)0xd0).Take(8).ToArray().Select(b => (int)b).ToArray();
+                    tl.Unknown6 = Data.Skip(offset + (int)0xd0).Take(8).ToArray();
                     tl.Unknown7 = Encoding.UTF8.GetString(Data.Skip(offset + (int)0xd8).Take((int)0x2c).ToArray());
                     fui2.fontNames.Add(tl);
                     offset += (int)0x104;
@@ -615,21 +620,55 @@ namespace FUI_Doc_Testing
             void CheckBitmaps(byte[] Data)
             {
                 int i = 1;
+                Console.WriteLine("Offset: " + offset);
                 while (i <= fui2.header.fuiBitmapCount)
                 {
                     try
                     {
                         FourJUserInterface.Bitmap tl = new FourJUserInterface.Bitmap();
-                        tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
-                        tl.ObjectType = BitConverter.ToInt32(Data.Skip(offset + (int)0x4).Take(4).ToArray(), 0);
-                        tl.ScaleWidth = BitConverter.ToInt32(Data.Skip(offset + (int)0x8).Take(4).ToArray(), 0);
-                        tl.ScaleHeight = BitConverter.ToInt32(Data.Skip(offset + (int)0xc).Take(4).ToArray(), 0);
-                        tl.Size1 = BitConverter.ToInt32(Data.Skip(offset + (int)0x10).Take(4).ToArray(), 0);
-                        tl.Size2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x14).Take(4).ToArray(), 0);
-                        tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x18).Take(4).ToArray(), 0);
+                        if (BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0) >= 1000000000)
+                        {
+                            List<byte> Dat1 = Data.Skip(offset).Take(4).ToList();
+                            List<byte> Dat2 = Data.Skip(offset + (int)0x4).Take(4).ToList();;
+                            List<byte> Dat3 = Data.Skip(offset + (int)0x8).Take(4).ToList();;
+                            List<byte> Dat4 = Data.Skip(offset + (int)0xc).Take(4).ToList();;
+                            List<byte> Dat5 = Data.Skip(offset + (int)0x10).Take(4).ToList();;
+                            List<byte> Dat6 = Data.Skip(offset + (int)0x14).Take(4).ToList();;
+                            List<byte> Dat7 = Data.Skip(offset + (int)0x18).Take(4).ToList();;
+                            List<byte> Dat8 = Data.Skip(offset + (int)0x1c).Take(4).ToList();;
+
+                            Dat1.Reverse();
+                            Dat2.Reverse();
+                            Dat3.Reverse();
+                            Dat4.Reverse();
+                            Dat5.Reverse();
+                            Dat6.Reverse();
+                            Dat7.Reverse();
+                            Dat8.Reverse();
+
+                            tl.Unknown1 = BitConverter.ToInt32(Dat1.ToArray(), 0);
+                            tl.ObjectType = BitConverter.ToInt32(Dat2.ToArray(), 0);
+                            tl.ScaleWidth = BitConverter.ToInt32(Dat3.ToArray(), 0);
+                            tl.ScaleHeight = BitConverter.ToInt32(Dat4.ToArray(), 0);
+                            tl.Size1 = BitConverter.ToInt32(Dat5.ToArray(), 0);
+                            tl.Size2 = BitConverter.ToInt32(Dat6.ToArray(), 0);
+                            tl.Unknown2 = BitConverter.ToInt32(Dat7.ToArray(), 0);
+                            tl.Unknown3 = BitConverter.ToInt32(Dat8.ToArray(), 0);
+                        }
+                        else
+                        {
+                            tl.Unknown1 = BitConverter.ToInt32(Data.Skip(offset).Take(4).ToArray(), 0);
+                            tl.ObjectType = BitConverter.ToInt32(Data.Skip(offset + (int)0x4).Take(4).ToArray(), 0);
+                            tl.ScaleWidth = BitConverter.ToInt32(Data.Skip(offset + (int)0x8).Take(4).ToArray(), 0);
+                            tl.ScaleHeight = BitConverter.ToInt32(Data.Skip(offset + (int)0xc).Take(4).ToArray(), 0);
+                            tl.Size1 = BitConverter.ToInt32(Data.Skip(offset + (int)0x10).Take(4).ToArray(), 0);
+                            tl.Size2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x14).Take(4).ToArray(), 0);
+                            tl.Unknown2 = BitConverter.ToInt32(Data.Skip(offset + (int)0x18).Take(4).ToArray(), 0);
+                            tl.Unknown3 = BitConverter.ToInt32(Data.Skip(offset + (int)0x1c).Take(4).ToArray(), 0);
+                        }
 
                         fui2.bitmaps.Add(tl);
-                        offset += (int)0x20;
+                        offset += 32;
 
                         //Get Images
                         //fui2.Images.Add(Data.Skip(offset).Take(tl.Size2).ToArray());
@@ -647,10 +686,219 @@ namespace FUI_Doc_Testing
                     }
                     catch
                     {
-                        MessageBox.Show(offset + "");
+                        MessageBox.Show(offset + "\n" + (offset-(int)0x20) + "");
+                    }
+                    foreach(FourJUserInterface.Bitmap bmp in fui2.bitmaps)
+                    {
+                        byte[] DataX = Data.Skip(offset).Take(bmp.Size2).ToArray();/*
+                        MemoryStream ms = new MemoryStream(DataX, 0, DataX.Length);
+                        System.Drawing.Image img = (System.Drawing.Bitmap.FromStream(ms));*/
+                        fui2.Images.Add(DataX);
+
+                        offset += bmp.Size2;
                     }
                 }
-                Console.WriteLine("Offset: " + offset);
+            }
+
+            public void SaveFUI(string path, FUI fjui)
+            {
+                Header header = fjui.header;
+
+                List<byte> Output = new List<byte>();
+
+                #region writing Header
+
+                Output.AddRange(Encoding.ASCII.GetBytes(fjui.header.Identifier));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.Unknow));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.ContentSize));
+                Output.AddRange(Encoding.ASCII.GetBytes(fjui.header.SwfFileName));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiTimelineCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiTimelineEventNameCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiTimelineActionCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiShapeCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiShapeComponentCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiVertCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiTimelineFrameCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiTimelineEventCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiReferenceCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiEdittextCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiSymbolCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiBitmapCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.imagesSize));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiFontNameCount));
+                Output.AddRange(BitConverter.GetBytes(fjui.header.fuiImportAssetCount));
+                Output.AddRange((fjui.header.FrameSize));
+                #endregion
+                if (header.fuiTimelineCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiTimelineCount)
+                    {
+                        Output.AddRange(BitConverter.GetBytes(fjui.timelines[i].ObjectType));
+                            Output.AddRange(fjui.timelines[i].Unknown);
+                        Output.AddRange(fjui.timelines[i].Rectangle);
+                        i++;
+                    }
+                }
+                if (header.fuiTimelineActionCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiTimelineActionCount)
+                    {
+                            Output.AddRange(fjui.timelineActions[i].Unknown);
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.timelineActions[i].UnknownName1));
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.timelineActions[i].UnknownName2));
+                        i++;
+                    }
+                }
+                if (header.fuiShapeCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiShapeCount)
+                    {
+                        Output.AddRange(BitConverter.GetBytes(fjui.shapes[i].UnknownValue1));
+                        Output.AddRange(BitConverter.GetBytes(fjui.shapes[i].UnknownValue2));
+                        Output.AddRange(BitConverter.GetBytes(fjui.shapes[i].ObjectType));
+                        Output.AddRange((fjui.shapes[i].Rectangle));
+                        i++;
+                    }
+                }
+                if (header.fuiShapeComponentCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiShapeComponentCount)
+                    {
+                        Output.AddRange((fjui.shapeComponents[i].FillInfo));
+                        Output.AddRange(BitConverter.GetBytes(fjui.shapeComponents[i].UnknownValue1));
+                        Output.AddRange(BitConverter.GetBytes(fjui.shapeComponents[i].UnknownValue2));
+                        i++;
+                    }
+                }
+                if (header.fuiVertCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiVertCount)
+                    {
+                        Output.AddRange(BitConverter.GetBytes(fjui.verts[i].x));
+                        Output.AddRange(BitConverter.GetBytes(fjui.verts[i].y));
+                        i++;
+                    }
+                }
+                if (header.fuiTimelineFrameCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiTimelineFrameCount)
+                    {
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.timelineFrames[i].FrameName));
+                        Output.AddRange(BitConverter.GetBytes(fjui.timelineFrames[i].Unknown1));
+                        Output.AddRange(BitConverter.GetBytes(fjui.timelineFrames[i].Unknown2));
+                        i++;
+                    }
+                }
+                if (header.fuiTimelineEventCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiTimelineEventCount)
+                    {
+                        Output.AddRange(fjui.timelineEvents[i].Unknown);
+                        Output.AddRange(fjui.timelineEvents[i].matrix);
+                        Output.AddRange(fjui.timelineEvents[i].ColorTransform);
+                        Output.AddRange(fjui.timelineEvents[i].Color);
+                        i++;
+                    }
+                }
+                if (header.fuiTimelineEventNameCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiTimelineEventNameCount)
+                    {
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.timelineEventNames[i].EventName));
+                        i++;
+                    }
+                }
+                if (header.fuiReferenceCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiReferenceCount)
+                    {
+                        Output.AddRange(BitConverter.GetBytes(fjui.references[i].Unknown1));
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.references[i].ReferenceName));
+                        Output.AddRange((fjui.references[i].Unknown2));
+                        i++;
+                    }
+                }
+                if (header.fuiEdittextCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiEdittextCount)
+                    {
+                        Output.AddRange(BitConverter.GetBytes(fjui.edittexts[i].Unknown1));
+                        Output.AddRange((fjui.edittexts[i].rectangle));
+                        Output.AddRange(BitConverter.GetBytes(fjui.edittexts[i].Unknown2));
+                        Output.AddRange(BitConverter.GetBytes(fjui.edittexts[i].Unknown3));
+                        Output.AddRange((fjui.edittexts[i].Color));
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.edittexts[i].htmlTextFormat));
+                        i++;
+                    }
+                }
+                if (header.fuiFontNameCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiFontNameCount)
+                    {
+                        Output.AddRange(BitConverter.GetBytes(fjui.fontNames[i].Unknown1));
+                        Output.AddRange(BitConverter.GetBytes(fjui.fontNames[i].Unknown2));
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.fontNames[i].Unknown3));
+                        Output.AddRange((fjui.fontNames[i].Unknown4));
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.fontNames[i].Unknown5));
+                        Output.AddRange((fjui.fontNames[i].Unknown6));
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.fontNames[i].Unknown7));
+                        i++;
+                    }
+                }
+                if (header.fuiSymbolCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiSymbolCount)
+                    {
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.symbols[i].SymbolName));
+                        Output.AddRange(BitConverter.GetBytes(fjui.symbols[i].ObjectType));
+                        Output.AddRange(BitConverter.GetBytes(fjui.symbols[i].Unknown));
+                        i++;
+                    }
+                }
+                if (header.fuiImportAssetCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiImportAssetCount)
+                    {
+                        Output.AddRange(Encoding.ASCII.GetBytes(fjui.importAssets[i].AssetName));
+                        i++;
+                    }
+                }
+                if (header.fuiBitmapCount > 0)
+                {
+                    int i = 0;
+                    while (i < header.fuiBitmapCount)
+                    {
+                        Output.AddRange(BitConverter.GetBytes(fjui.bitmaps[i].Unknown1));
+                        Output.AddRange(BitConverter.GetBytes(fjui.bitmaps[i].ObjectType));
+                        Output.AddRange(BitConverter.GetBytes(fjui.bitmaps[i].ScaleWidth));
+                        Output.AddRange(BitConverter.GetBytes(fjui.bitmaps[i].ScaleHeight));
+                        Output.AddRange(BitConverter.GetBytes(fjui.bitmaps[i].Size1));
+                        Output.AddRange(BitConverter.GetBytes(fjui.bitmaps[i].Size2));
+                        Output.AddRange(BitConverter.GetBytes(fjui.bitmaps[i].Unknown2));
+                        Output.AddRange(BitConverter.GetBytes(fjui.bitmaps[i].Unknown3));
+                        i++;
+                    }
+                }
+                foreach(byte[] dat in fjui.Images)
+                {
+                    Output.AddRange(dat);
+                }
+                /*
+                */
+                File.WriteAllBytes(path.Replace(".fui", "X1.fui"), Output.ToArray());
             }
         }
 
